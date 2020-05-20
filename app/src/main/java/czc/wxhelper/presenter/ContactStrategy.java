@@ -76,12 +76,12 @@ public class ContactStrategy extends BaseTaskStrategy {
                 AccessibilityNodeInfo nodeInfoPerson = linear3.get(0);
                 AccessibilityNodeInfo userNameNode = nodeInfoPerson.getChild(0).getChild(0);
                 AccessibilityNodeInfo waitingValNode = nodeInfoPerson.getChild(1).getChild(0);
-                if (nodeInfoPerson != null && nodeInfoPerson.getChildCount() >= 2 && userNameNode!=null && waitingValNode!=null) {
+                if (nodeInfoPerson != null && nodeInfoPerson.getChildCount() >= 2 && userNameNode != null && waitingValNode != null) {
 
                     Log.i("czc", userNameNode.getText().toString());
                     Log.i("czc", waitingValNode.getText().toString());
 
-                    if (!mRecordMap.containsKey(userNameNode.getText().toString()) && !waitingValNode.getText().toString().equals("等待验证")  && !waitingValNode.getText().toString().equals("已添加")) {
+                    if (!mRecordMap.containsKey(userNameNode.getText().toString()) && !waitingValNode.getText().toString().equals("等待验证") && !waitingValNode.getText().toString().equals("已添加")) {
                         AccessibilityNodeInfo clickNode = userNameNode;
                         while (clickNode != null && !clickNode.isClickable()) {
                             clickNode = clickNode.getParent();
@@ -151,7 +151,7 @@ public class ContactStrategy extends BaseTaskStrategy {
 //            }
             if (!isSayHi) {
                 NodeUtil.findNodeByTextAndClick(root, "添加到通讯录");
-            }else {
+            } else {
                 Log.i("czc", "click back btn ·····");
                 performBack();
                 isSayHi = false;
@@ -168,19 +168,39 @@ public class ContactStrategy extends BaseTaskStrategy {
         //找到当前获取焦点的view
         isSayHi = true;
         if (root != null) {
-            AccessibilityNodeInfo target = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
+            //填入验证信息
+            List<AccessibilityNodeInfo> infoSentenceTitle = root.findAccessibilityNodeInfosByText("发送添加朋友申请");
+            if (infoSentenceTitle != null && infoSentenceTitle.size() > 0) {
+                if (infoSentenceTitle.get(0).getParent() != null && infoSentenceTitle.get(0).getParent().getChild(1) != null) {
+                    AccessibilityNodeInfo target = infoSentenceTitle.get(0).getParent().getChild(1);
 
-            if (target != null && Build.VERSION.SDK_INT >= 21) {
-                if (mSentenceList != null && mSentenceList.size() > 0) {
-                    Random random = new Random();
-                    int nextInt = random.nextInt(mSentenceList.size());
-                    Bundle arguments = new Bundle();
-                    arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
-                            mSentenceList.get(nextInt));
-                    target.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+                    if (target != null && Build.VERSION.SDK_INT >= 21) {
+                        if (mSentenceList != null && mSentenceList.size() > 0) {
+                            Random random = new Random();
+                            int nextInt = random.nextInt(mSentenceList.size());
+                            Bundle arguments = new Bundle();
+                            arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                                    mSentenceList.get(nextInt));
+                            target.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+                        }
+                    }
                 }
             }
-            NodeUtil.findNodeByTextAndClick(root, "发送");
+            //获取 对方名称
+            String userName = null;
+            List<AccessibilityNodeInfo> infoNickNameTitle = root.findAccessibilityNodeInfosByText("设置备注");
+            if (infoNickNameTitle != null && infoNickNameTitle.size() > 0) {
+                if (infoNickNameTitle.get(0).getParent() != null && infoNickNameTitle.get(0).getParent().getChild(1) != null) {
+                    AccessibilityNodeInfo target = infoNickNameTitle.get(0).getParent().getChild(1);
+                    userName = target.getText().toString();
+
+                }
+            }
+
+            boolean result = NodeUtil.findNodeByTextAndClick(root, "发送");
+            if (userName != null && !userName.isEmpty()) {
+                mRecordMap.put(userName, result);
+            }
 
         }
     }

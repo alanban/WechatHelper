@@ -1,5 +1,6 @@
 package czc.wxhelper.presenter;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -74,7 +75,7 @@ public abstract class BaseTaskStrategy implements TaskStrategy {
     private Handler handler = new Handler(Looper.getMainLooper());
 
     public BaseTaskStrategy() {
-        List<SentenceModel> recordList = DBManager.getInstance(getContext()).getSession().getSentenceModelDao().loadAll();
+        List<SentenceModel> recordList = DBManager.getInstance(MyApplication.getAppContext()).getSession().getSentenceModelDao().loadAll();
         if (recordList != null) {
             mSentenceList.clear();
             for (SentenceModel record : recordList) {
