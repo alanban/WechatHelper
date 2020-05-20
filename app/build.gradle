@@ -1,0 +1,83 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'com.jakewharton.butterknife'
+
+android {
+    signingConfigs {
+        release {
+            keyAlias 'czc'
+            keyPassword 'asd123'
+            storeFile file('keystore.jks')
+            storePassword 'asd123'
+        }
+    }
+    compileSdkVersion 27
+    buildToolsVersion "26.0.3"
+    //**兼容Android6.0系统所需，如果这句话报错，可在dependencies标签下使用compile 'cn.bmob.android:http-legacy:1.0'**
+    useLibrary 'org.apache.http.legacy'
+    defaultConfig {
+        applicationId "com.czc.lazyhelper"
+        minSdkVersion 18
+        targetSdkVersion 27
+        versionCode 2
+        versionName "1.1"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            // Zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+    //greendao配置
+    greendao {
+        //版本号，升级时可配置
+        schemaVersion 1
+//        daoPackage 'czc.wxphonenumberhelper.db'
+//        targetGenDir 'src/main/java'
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    //    compile 'com.github.davidpizarro:pickerui:1.0.1'
+    //如果你想应用能够兼容Android6.0，请添加此依赖(org.apache.http.legacy.jar)
+    compile 'cn.bmob.android:http-legacy:1.0'
+    //    compile 'com.google.code.gson:gson:2.8.1'
+    //    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile('com.zhy:okhttputils:2.6.2') {
+        exclude group: 'com.squareup.okhttp3'
+        exclude group: 'com.squareup.okio'
+    }
+    compile 'com.android.support:appcompat-v7:27.1.0'
+    compile 'com.android.support:design:27.1.0'
+    // butterknife
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    //eventbus
+    compile 'org.greenrobot:eventbus:3.1.1'
+    compile 'cn.bmob.android:bmob-sdk:3.5.5'
+    compile 'com.baoyz.swipemenulistview:library:1.3.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
+    compile 'com.zhihu.android:matisse:0.4.3'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3-alpha-6'
+    compile 'org.greenrobot:greendao:3.2.2'
+    // android util
+    compile 'com.blankj:utilcode:1.17.3'
+    // qmui
+        compile 'com.qmuiteam:qmui:1.1.3'
+    debugCompile('com.github.whataa:pandora:v1.0.1') {
+        exclude group: 'com.squareup.okhttp3'
+        exclude group: 'com.squareup.okio'
+    }
+    releaseCompile('com.github.whataa:pandora-no-op:v1.0.1') {
+        exclude group: 'com.squareup.okhttp3'
+        exclude group: 'com.squareup.okio'
+    }
+}
